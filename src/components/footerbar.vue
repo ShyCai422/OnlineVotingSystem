@@ -4,7 +4,7 @@
     app
     color="blue-grey darken-3"
     height="34"
-    style="color:white;"
+    style="color:white"
     >
       <v-spacer></v-spacer>
       <a

@@ -10,8 +10,8 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item) in navItems"
-          :key=item
+          v-for="(item, index) in navItems"
+          :key=index
           :to="item.to"
           color="white"
           style="font-size:22px;"
@@ -62,7 +62,7 @@ export default {
     navItems: [
       {text:'首页', icon:'mdi-send', to:'/Adminer/Home'},
       {text:'投票信息', icon:'mdi-send', to:'/Adminer/VotingInfo'},
-      {text:'历史投票', icon:'mdi-send', to:'/Adminer/VotingHistory'},
+      {text:'用户信息', icon:'mdi-send', to:'/Adminer/UserInfo'},
       {text:'权限管理', icon:'mdi-send', to:'/Adminer/AccessManagement'},
       {text:'系统设置', icon:'mdi-send', to:'/Adminer/SystemSetting'},
     ],

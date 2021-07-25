@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
 import AdminerHome from '@/views/Adminer/Home.vue'
 import AdminerAccess from '@/views/Adminer/AccessManagement.vue'
 import AdminerSystem from '@/views/Adminer/SystemSetting.vue'
 import AdminerVoting from '@/views/Adminer/VotingInfo.vue'
-import AdminerHistory from '@/views/Adminer/VotingHistory.vue'
+import AdminUserInfo from '@/views/Adminer/UserInfo.vue'
 import UserHome from '@/views/User/Home.vue'
 import UserSetting from '@/views/User/UserSetting.vue'
 import UserCreateVoting from '@/views/User/CreateVoting.vue'
@@ -16,8 +17,17 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'login',
+    redirect: '/Login'
+  },
+  {
+    path: '/Login',
+    name: 'Login',
     component: Login
+  },
+  {
+    path: '/Register',
+    name: 'Register',
+    component: Register
   },
   {
     path: '/Adminer/Home',
@@ -35,9 +45,9 @@ const routes = [
     component: AdminerVoting
   },
   {
-    path: '/Adminer/VotingHistory',
-    name: 'AdminerHistory',
-    component: AdminerHistory
+    path: '/Adminer/UserInfo',
+    name: 'AdminUserInfo',
+    component: AdminUserInfo
   },
   {
     path: '/Adminer/SystemSetting',
@@ -46,7 +56,7 @@ const routes = [
   },
   {
     path: '/User/Home',
-    name: 'AdminerSystem',
+    name: 'UserHome',
     component: UserHome
   },
   {
@@ -70,6 +80,19 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach(function(to, from, next){
+  if(!sessionStorage.getItem('username')){
+    if(to.path == '/Register'){
+      next()
+    }else{
+      if(to.path !== '/Login'){
+        next('/Login')
+      }
+    }
+  };
+  next();
 })
 
 export default router

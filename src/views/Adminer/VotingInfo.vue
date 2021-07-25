@@ -10,8 +10,8 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item) in navItems"
-          :key=item
+          v-for="(item, index) in navItems"
+          :key=index
           :to="item.to"
           color="white"
           style="font-size:22px;"
@@ -31,27 +31,220 @@
     </v-navigation-drawer>
 
     <div id="adminerVoting">
-      <v-card width="1400" class="mx-auto" elevation="1">
-        <v-card-title>
-          <v-spacer></v-spacer>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-spacer></v-spacer>
-        </v-card-title>
-
-        <v-data-table
-          :headers="tableHeaders"
-          :items="votingItems"
-          :search="search"
-          :item-key="num"
-          :sort-by="startTime"
-        ></v-data-table>
-      </v-card>
+      <div id="votingInfo" v-if="votingInfo_show" style="margin:20px">
+        <el-table
+          :data="voteDataTable"
+          style="width: 100%">
+          <el-table-column
+            label=""
+            width="30">
+          </el-table-column>
+          <el-table-column
+            prop="voteID"
+            label="编号"
+            width="125">
+          </el-table-column>
+          <el-table-column
+            prop="theme"
+            label="主题"
+            width="190">
+          </el-table-column>
+          <el-table-column
+            prop="author"
+            label="创建者"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="classify"
+            label="分类"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="status"
+            label="状态"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="endTime"
+            label="截止日期"
+            width="200">
+          </el-table-column>
+          <el-table-column
+            label="操作"
+            width="250">
+            <template slot="header" slot-scope="props">
+              <el-row :gutter="10">
+                <el-col :span="18">
+                  <el-input v-model="searchVote" placeholder="请输入投票编号">
+                  </el-input>
+                </el-col>
+                <el-col :span="6">
+                  <v-btn icon @click="searchVoteData('4')">
+                    <v-icon large>mdi-magnify</v-icon>
+                  </v-btn>
+                </el-col>
+              </el-row>
+            </template>
+            <template slot-scope="props">
+              <div>
+                <span>
+                  <v-btn color="blue" width="100" height="30"
+                          style="margin:0 30px"
+                          @click="showVoteInfo(props.row.voteID);
+                                  checkVotingInfo_show=true;
+                                  votingInfo_show=false">查看</v-btn>
+                </span>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div id="checkVotingInfo" v-if="checkVotingInfo_show">
+        <v-card color="blue-grey lighten-3" style="margin:10px 10px 2px" height="60">
+          <el-row>
+            <el-col>
+              <v-card height="44"
+                      width="950"
+                      style="float:left; margin:8px 40px 8px 30px"
+                      color="blue-grey lighten-3" elevation="0">
+                <span style="font-size:32px">投票详情</span>
+              </v-card>
+              <v-btn color="blue"
+                    width="80" 
+                    height="40"
+                    style="margin: 10px 20px"
+                    @click="checkVotingInfo_show=false;
+                            votingInfo_show=true">
+                <span style="font-size:20px">返回</span>          
+              </v-btn>
+            </el-col>
+          </el-row>
+        </v-card>
+        <v-card  style="margin:0 10px">
+          <el-row style="background-color:green;height:200px">
+            <el-col :span="6">
+              <img src="../../assets/tou04.jpg" alt="" height="180" width="250" style="margin:10px 15px"> 
+            </el-col>
+            <el-col :span="18">
+              <el-row style="background-color:blue; height:80px; padding:5px 0">
+                <el-col :span="24">
+                  <span style="color:white; font-size:28px; margin: 0 20px">
+                    {{voteDetail[0].theme}}
+                  </span>
+                  <span style="color:white; font-size:28px; margin: 0 80px">
+                    {{voteDetail[0].voteID}}
+                  </span>
+                  <span style="color:white; font-size:28px; margin: 0 90px">
+                    {{voteDetail[0].status}}
+                  </span>
+                  <br>
+                  <span style="color:white; font-size:18px; margin: 0 60px">
+                    简要描述：{{voteDetail[0].description}}
+                  </span>
+                </el-col>
+              </el-row>
+              <el-row style="background-color:purple; height:120px; padding:5px 0">
+                <el-col :span="12">
+                  <span style="color:white; font-size:22px; margin: 0 20px">
+                    创建者：{{voteDetail[0].author}}
+                  </span>
+                  <br>
+                  <span style="color:white; font-size:22px; margin: 0 20px">
+                    投票类型：{{voteDetail[0].classify}}
+                  </span>
+                  <br>
+                  <span style="color:white; font-size:22px; margin: 0 20px">
+                    投票权限：{{voteDetail[0].authorization}}
+                  </span>
+                </el-col>
+                <el-col :span="12">
+                  <span style="color:white; font-size:22px; margin: 0 20px">
+                    投票人数：{{voteDetail[0].voteCount}}
+                  </span>
+                  <br>
+                  <span style="color:white; font-size:22px; margin: 0 20px">
+                    开始日期：{{voteDetail[0].startTime}}
+                  </span>
+                  <br>
+                  <span style="color:white; font-size:22px; margin: 0 20px">
+                    截止日期：{{voteDetail[0].endTime}}
+                  </span>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </v-card>
+        <v-card max-width="1147" style="margin:0 10px; padding:10px" elevation="0">
+          <v-card
+            height="200"
+            width="552"
+            style="margin:5px 5px; float:left"
+            color="green"
+            v-for="item in voteResultList"
+            :key="item.rank"
+          >
+            <el-row>
+              <el-col :span="8">
+                <img src="../../assets/tou01.jpg" alt="候选人头像" height="172" width="150" style="margin:14px">
+              </el-col>
+              <el-col :span="16">
+                <el-row>
+                  <el-col :span="12">
+                    <v-card elevation="0" color="green" style="text-indent:30px; margin:10px; font-size:36px">
+                      {{ item.num }}
+                    </v-card>
+                  </el-col>
+                  <el-col :span="12">
+                    <v-card elevation="0" color="green" style="text-indent:28px; margin:10px; font-size:36px">
+                      {{ item.name }}
+                    </v-card>
+                  </el-col>
+                </el-row>
+                <el-row style="height:70px">
+                  <el-col :span="24">
+                    <v-card elevation="0" color="green" style="text-indent:8px; font-size:20px">
+                      选手描述： {{ item.description}}
+                    </v-card>
+                  </el-col>
+                </el-row>
+                <el-row v-if="voteDetail[0].status=='进行中'">
+                  <el-col :span="14">
+                    <v-card
+                      elevation="0"
+                      color="green"
+                      style="text-indent:8px; font-size:20px"
+                      v-if="voteDetail[0].classify=='计票制'">
+                      目前票数：{{ item.count }}
+                    </v-card>
+                    <v-card
+                      elevation="0"
+                      color="green"
+                      style="text-indent:8px; font-size:20px"
+                      v-if="voteDetail[0].classify=='打分制'">
+                      目前得分：{{ (item.count/parseInt(voteDetail[0].voteCount)).toFixed(2)}}
+                    </v-card>
+                  </el-col>
+                  <el-col :span="10">
+                    <v-btn>投TA一票</v-btn>
+                  </el-col>
+                </el-row>
+                <el-row v-if="voteDetail[0].status=='已结束'">
+                  <el-col :span="12">
+                    <v-card elevation="0" color="green" style="text-indent:8px; font-size:20px">
+                      最终票数：{{ item.count }}
+                    </v-card>
+                  </el-col>
+                  <el-col :span="12">
+                    <v-card elevation="0" color="green" style="text-indent:28px; font-size:20px">
+                      排名：{{ item.rank }}
+                    </v-card>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
+          </v-card>
+        </v-card>
+      </div>
     </div>
 
     <footerbar></footerbar>
@@ -68,110 +261,114 @@ export default {
   name: 'AdminerVoting',
 
   data: () => ({
-    search: '',
-    tableHeaders: [
-      {
-        text: '事件编号',
-        align: 'start',
-        filterable: false,
-        value: 'num',
-      },
-      { text: '主题', value: 'theme' },
-      { text: '创建者', value: 'author' },
-      { text: '信息简介', value: 'info' },
-      { text: '啊啊啊啊', value: 'other' },
-      { text: '创建时间', value: 'startTime' },
-    ],
-    votingItems: [
-      {
-        num: 'Frozen Yogurt',
-        theme: 159,
-        author: 6.0,
-        info: 24,
-        other: 4.0,
-        startTime: '1',
-      },
-      {
-        num: 'Ice cream sandwich',
-        theme: 237,
-        author: 9.0,
-        info: 37,
-        other: 4.3,
-        startTime: '1',
-      },
-      {
-        num: 'Eclair',
-        theme: 262,
-        author: 16.0,
-        info: 23,
-        other: 6.0,
-        startTime: '7',
-      },
-      {
-        num: 'Cupcake',
-        theme: 305,
-        author: 3.7,
-        info: 67,
-        other: 4.3,
-        startTime: '8',
-      },
-      {
-        num: 'Gingerbread',
-        theme: 356,
-        author: 16.0,
-        info: 49,
-        other: 3.9,
-        startTime: '16',
-      },
-      {
-        num: 'Jelly bean',
-        theme: 375,
-        author: 0.0,
-        info: 94,
-        other: 0.0,
-        startTime: '3',
-      },
-      {
-        num: 'Lollipop',
-        theme: 392,
-        author: 0.2,
-        info: 98,
-        other: 0,
-        startTime: '2%',
-      },
-      {
-        num: 'Honeycomb',
-        theme: 408,
-        author: 3.2,
-        info: 87,
-        other: 6.5,
-        startTime: '45%',
-      },
-      {
-        num: 'Donut',
-        theme: 452,
-        author: 25.0,
-        info: 51,
-        other: 4.9,
-        startTime: '22%',
-      },
-      {
-        num: 'KitKat',
-        theme: 518,
-        author: 26.0,
-        info: 65,
-        other: 7,
-        startTime: '6%',
-      },
-    ],
+    searchVote: null,
+    voteDataTable: [],
+    votingInfo_show: true,
+    checkVotingInfo_show: false,
     navItems: [
       {text:'首页', icon:'mdi-send', to:'/Adminer/Home'},
       {text:'投票信息', icon:'mdi-send', to:'/Adminer/VotingInfo'},
-      {text:'历史投票', icon:'mdi-send', to:'/Adminer/VotingHistory'},
+      {text:'用户信息', icon:'mdi-send', to:'/Adminer/UserInfo'},
       {text:'权限管理', icon:'mdi-send', to:'/Adminer/AccessManagement'},
       {text:'系统设置', icon:'mdi-send', to:'/Adminer/SystemSetting'},
     ],
-  })
+  }),
+
+  methods: {
+    selectVoteData(num) {
+      let name = sessionStorage.getItem("username");
+      this.$http.post(
+        '/api/selectVoteData',
+        {
+          num: num,
+          name: name
+        }
+      ).then(res=>{
+          let arr = new Array()
+          arr = res.data.result
+          this.voteDataTable = []
+          this.voteDataTable = arr
+      });
+    },
+    searchVoteData(theNum) {
+      let name = sessionStorage.getItem("username");
+      this.$http.post(
+        '/api/searchVoteData',
+        {
+          searchId: this.searchVote,
+          num: theNum,
+          name: name
+        }
+      ).then(res=>{
+          let arr = new Array()
+          arr = res.data.result
+          this.voteDataTable = []
+          this.voteDataTable = arr
+      });
+    },
+    showVoteInfo(id) {
+      let item_dic = new Object();
+      for(let i = 0; i < this.voteDataTable.length; i++) {
+        let item = this.voteDataTable[i];
+        if(id == item.voteID) {
+          item_dic.voteID = item.voteID
+          item_dic.theme = item.theme
+          item_dic.author = item.author
+          item_dic.classify = item.classify
+          item_dic.authorization = item.authorization
+          item_dic.status = item.status
+          item_dic.voteCount = item.voteCount
+          item_dic.createTime = item.createTime
+          item_dic.startTime = item.startTime
+          item_dic.endTime = item.endTime
+          item_dic.candidateInfo = item.candidateInfo
+          item_dic.voteResults = item.voteResults
+          item_dic.description = item.description
+        }
+      }
+      this.voteDetail = [];
+      this.voteDetail.push(item_dic);
+
+      let templist = new Array()
+      for(let i = 0; i < this.voteDataTable.length; i++) {
+        let item = this.voteDataTable[i];
+        if(id == item.voteID) {
+          templist = item.candidateInfo.candidates
+          for(let j = 0; j < templist.length; j++) {
+            for(let k = 0; k < item.voteResults.length; k++) {
+              if(templist[j].num == item.voteResults[k].num) {
+                templist[j].count = item.voteResults[k].count
+              }
+            }
+          }
+          // 冒泡排序
+          for(let m = 0; m < templist.length - 1; m++) {
+            let min_count = parseInt(templist[0].count) 
+            for(let n = 0; n < templist.length - 1 - m; n++) {
+              if(min_count > parseInt(templist[n+1].count)) {
+                min_count = parseInt(templist[n+1].count)
+              }else{
+                let temp = new Object()
+                temp = templist[n]
+                templist[n] = templist[n+1]
+                templist[n+1] = temp
+              }
+            }
+          }
+          // 添加rank字段
+          for(let t = 0; t < templist.length; t++) {
+            templist[t].rank = (t + 1) + ""
+          }
+          this.voteResultList = templist
+        }
+      }
+      // console.log(this.voteResultList);
+    }
+  },
+
+  mounted() {
+    this.selectVoteData("4")
+  },
   
 }
 </script>

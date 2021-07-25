@@ -1,0 +1,31 @@
+{
+    "code": 200,
+    "adminerInfo": {
+        "adminer": {
+            "identity": "adminer",
+            "password": "123456"
+        }
+    },
+    "userInfo": {
+        "user01": {
+            "identity": "user",
+            "password": "123123"
+        },
+        "user02": {
+            "identity": "user",
+            "password": "123123"
+        },
+        "user03": {
+            "identity": "user",
+            "password": "123123"
+        },
+        "user04": {
+            "identity": "user",
+            "password": "123123"
+        },
+        "user05": {
+            "identity": "user",
+            "password": "123123"
+        }
+    }
+}

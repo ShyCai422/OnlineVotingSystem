@@ -1,195 +1,152 @@
 <template>
   <div class="login">
-    <v-app-bar
-    app
-    color="blue-grey darken-3"
-    >
-      <v-icon color="white">mdi-home</v-icon>
-      <v-app-bar-title 
-      style="
-            color:white;
-            font-size:28px;
-            "
-      width="200"
-      >在线电子投票系统</v-app-bar-title>
-      <v-spacer></v-spacer>
-
-      <v-btn color="blue-grey darken-3" depressed width="72" height="30">
-        <v-text
-          style="color:white;
-                font-size:14px;
-                "
-        >语言设置 | </v-text>
-      </v-btn>
-      <v-btn color="blue-grey darken-3" depressed width="73" height="30">
-        <v-text
-          style="color:white;
-                font-size:14px;
-                "
-        >帮助中心 | </v-text>
-      </v-btn>
-      <v-btn color="blue-grey darken-3" depressed width="70" height="30">
-        <v-text
-          style="color:white;
-                font-size:14px;
-                "
-        >登录反馈</v-text>
-      </v-btn>
-
-    </v-app-bar>
-
-    <v-row align="center">
-      <v-col cols="2"></v-col>
-      <v-col cols="3">
-        <v-card height="400">
-          <v-card width="300" class="mx-auto">
-            <v-form v-model="valid">
-              <v-container>
-                <v-row>
-                  <v-col
-                    cols="10"
-                  >
-
-                    <v-text-field
-                      solo
-                      
-                      v-model="firstname"
-                      :rules="nameRules"
-                      
-                      label="请输入您的账号"
-                      prepend-icon="mdi-account-circle"
-                      required
-                    ></v-text-field>
-
-                    <v-text-field
-                      solo
-                      v-model="lastname"
-                      :rules="nameRules"
-                      
-                      label="请输入您的密码"
-                      prepend-icon="mdi-lock"
-                      required
-                    ></v-text-field>
-                
-                  </v-col>
-                </v-row>
-                
-                <v-row>
-                  <v-col cols="10">
-                    <v-checkbox v-model="checkbox">
-                      <template v-slot:label>
-                        <div>
-                          我接受
-                          <v-tooltip bottom>
-                            <template v-slot:activator="{ on }">
-                              <a
-                                target="_blank"
-                                href="https://vuetifyjs.com"
-                                @click.stop
-                                v-on="on"
-                              >
-                                该服务协议
-                              </a>
-                            </template>
-                          </v-tooltip>
-                        </div>
-                      </template>
-                    </v-checkbox>
-                  </v-col>
-                </v-row>
-
-                <v-btn
-                  depressed
-                  color="primary"
-                  to="/Adminer/Home"
-                >
-                  Primary
-                </v-btn>
-
-              </v-container>
-            </v-form>
-          </v-card>
-        </v-card>
-      </v-col>
-      <v-col cols="2"></v-col>
-      <v-col cols="3">
-        <v-row style="height: 100px"></v-row>
-        <v-row
-        >
-          <v-card
-            height="400"
-            width="330"
-            color="blue-grey darken-2"
-            light
-            elevation="2"
-          >
-            <v-card
-              height="50"
-              color="primary"
-            ></v-card>
-            <v-divider style="color:white"></v-divider>
-            <v-card width="280" class="mx-auto mt-5">
-              <v-card-title>
-                <h2>用户登录</h2>
-              </v-card-title>
-              <v-card-text>
-                <v-form>
-                  <v-text-field  prepend-icon="mdi-account-circle" />
-                  <v-text-field :type="showPassword ? 'text' : 'password'"  prepend-icon="mdi-lock"
-                          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                          @click:append="showPassword = !showPassword" />
-                </v-form>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions>
-                  <v-btn color="info">注册</v-btn>
-                  <v-btn color="success" @click="login" to="/Adminer/Home">管理员登录</v-btn>
-                  <v-btn color="success" @click="login" to="/User/Home">用户登录</v-btn>
-              </v-card-actions>
-            </v-card>
-        
-          </v-card>
-        </v-row>
-      </v-col>
-      <v-col cols="2"></v-col>
-    </v-row>
+    <outheaderbar></outheaderbar>
+ 
+    <div class="bg-content">
+      <v-row align="center">
+        <v-col cols="2"></v-col>
+        <v-col cols="3"></v-col>
+        <v-col cols="2"></v-col>
+        <v-col cols="3">
+          <div id="loginBox">
+            <v-row style="height: 140px"></v-row>
+            <v-row>
+              <v-card width="280" class="mx-auto mt-5" elevation="16">
+                <v-card-title>
+                  <h2>用户登录</h2>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="70px">
+                    <el-form-item label="用户名" prop="username">
+                      <el-input v-model="ruleForm.username" type="text" prefix-icon="el-icon-user"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码" prop="password">
+                      <el-input v-model="ruleForm.password" type="password" prefix-icon="el-icon-key" ></el-input>
+                    </el-form-item>
+                    <el-row :gutter="10" class="checkCodeBox">
+                      <el-col :span="15">
+                        <el-input v-model="checkNode" placeholder="请输入验证码" clearable size="small"></el-input>
+                      </el-col>
+                      <el-col :span="6">
+                        <img src="../assets/ting2.jpg" alt="验证码图片" width="90" height="32">
+                      </el-col>
+                    </el-row>
+                    <div class="buttonGroup">
+                      <el-button type="primary" @click="login" size="small">登录</el-button>
+                      <span class="registerButton">
+                        <router-link to="/Register">
+                          <el-button type="warning" size="small">注册</el-button>
+                        </router-link>
+                      </span>
+                    </div>
+                    <!-- </el-button> -->
+                  </el-form>
+                </v-card-actions>
+              </v-card>
+            </v-row>
+          </div>
+        </v-col>
+        <v-col cols="2"></v-col>
+      </v-row>
+    </div>
 
     <footerbar></footerbar>
   </div>
 </template>
 
 <script>
-
 import footerbar from '../components/footerbar.vue'
+import outheaderbar from '../components/outheaderbar.vue'
 
 export default {
-  components: { footerbar },
+  components: { outheaderbar, footerbar },
   name: 'Login',
 
   data: () => ({
-      valid: false,
-      firstname: '',
-      lastname: '',
-      nameRules: [
-        v => !!v || 'Name is required',
-        v => v.length <= 10 || 'Name must be less than 10 characters',
+    checkNode: '',
+    adminerInfo: null,
+    userInfo: null,
+    ruleForm: {
+      username: '',
+      password: '',
+    },
+    rules: {
+      username: [
+        { required: true, message: '请输入您的账号', trigger: 'blur' },
+        { min: 5, max: 16, message: '长度在 5 到 16 个字符', trigger: 'blur' }
       ],
-      email: '',
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /.+@.+/.test(v) || 'E-mail must be valid',
+      password: [
+        { required: true, message: '请输入您的密码', trigger: 'blur' },
+        { min: 5, max: 16, message: '长度在 5 到 16 个字符', trigger: 'blur' }
       ],
-    showPassword: false,
-    checkbox: false, 
-  })
+    },
+  }),
+  methods: {
+    // 输入账号密码后验证登录
+    login() {
+      let {username, password} = this.ruleForm;
+      this.$http.post(
+        '/api/login',
+        {
+          username: username,
+          password: password
+        }
+      ).then(res=>{
+        let code = res.data.code;
+        let result = res.data.result;
+        if(code == '200'){
+          sessionStorage.setItem('username',username);
+          // 获取用户的基本信息
+          if(username == "adminer") {
+            this.adminerInfo = result;
+            this.$router.push('/Adminer/Home')
+          }else{
+            this.userInfo = result;
+            this.$router.push('/User/Home');
+          }
+        }else{
+          this.$message({
+            message: '账号名或密码错误!',
+            type: 'error',
+            center: true,
+            offset: 350
+          });
+        }
+      })
+    }
+  },
 }
 </script>
 
 <style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
   .login {
     background-image: url('https://pic1.zhimg.com/80/v2-bd3434579ecc3b073275fbccffbf11d4_1440w.jpg');
-    background-size: 1692px, 600px;
+    background-size: 100% 100%;
+    height: 102%;
     background-attachment: fixed;
-    height: 732px;
+  }
+
+  .registerButton {
+    margin: 12px;
+  }
+
+  .check {
+    margin: 2px;
+  }
+
+  .checkCodeBox {
+    padding: 0 10px;
+  }
+
+  .buttonGroup {
+    margin: 14px 1px;
+  }
+  #loginBox .row {
+    margin: 0;
   }
 </style>
